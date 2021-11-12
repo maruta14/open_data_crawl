@@ -65,9 +65,9 @@ DEPTH_LIMIT = 2
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'search_data.pipelines.SearchDataPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'search_data.pipelines.DuplicatesPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
