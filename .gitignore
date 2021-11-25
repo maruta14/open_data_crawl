@@ -1,3 +1,4 @@
 *.csv
 .scrapy
 __pycache__
+*.txt
