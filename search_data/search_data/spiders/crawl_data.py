@@ -180,12 +180,25 @@ prefectures ={
     },
     "yamanashi": {
         'allowed_domains' : ['www.pref.yamanashi.jp'],
-        'start_urls' : ['https://www.pref.yamanashi.jp/opendata/catalog/'],
-        'rule1' : r'\?p=[0-9]+_[a-z]&asc=data_link_title&displayedresults=10#tmp_opdata_result',
-        'restrict_css' : '#tmp_opdata_result > table > tbody > tr > td:nth-child(8) > p.opendata_page_btn',
+        'start_urls' : ['https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=5_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=15_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=25_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=35_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=45_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=55_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=65_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=75_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=85_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=95_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=105_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=115_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        'https://www.pref.yamanashi.jp/opendata/catalog/index.php?p=120_p&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+                        ],
+        'rule1' : r'\?p=[0-9]+_[a-z]&asc=data_link_title&displayedresults=100#tmp_opdata_result',
+        'restrict_css' : '#tmp_opdata_result > table',
         'title_css' : 'head > title::text',
-        'text_css' : '#tmp_contents',
-        "depth_limit" : 100
+        'text_css' : 'div#tmp_contents',
+        "depth_limit" : 2
     },
     "nagano": {
         'allowed_domains' : ['tokei.pref.nagano.lg.jp'],
@@ -209,13 +222,42 @@ prefectures ={
         'text_css' : '#content > div.row.wrapper > div > article > div',
         "depth_limit" : 2   
     },
+    "sizuoka": {
+        'allowed_domains' : ['opendata.pref.shizuoka.jp'],
+        'start_urls' : ['https://opendata.pref.shizuoka.jp/dataset/search?page=5',],
+        'rule1' : r'/dataset/search.page=[0-9]+',
+        'rule2' : r'/dataset/.*\.html',
+        # 'deny_rule' : r"/dataset/.*(resource|groups|activity).*",    
+        'title_css' : 'head > title::text',
+        'text_css' : '#main > div.contents',
+        'text_css2' : '#cms-tab-7-0-view > div > div > dl',
+        "depth_limit" : 2   
+    },
+    "aichi": {
+        'allowed_domains' : ['www.pref.aichi.jp'],
+        'start_urls' : ['https://www.pref.aichi.jp/life/6/34/114/'],
+        'restrict_css' : '#life1_news',
+        'title_css' : 'head > title::text',
+        'text_css' : '#main_body > div.detail_free',
+        "depth_limit" : 2   
+    },
+    "mie": {
+        'allowed_domains' : ['www.pref.aichi.jp'],
+        'start_urls' : ['https://www.pref.mie.lg.jp/IT/HP/87585000001.htm'],
+        # 'rule' : r'/IT/HP/[0-9]+\.htm',
+        # 'restrict_css' : '#center-contents > div.center-body.clearfix',
+        # 'restrict_css2' : '#section1',
+        'title_css' : 'head > title::text',
+        'text_css' : 'div#section',
+        "depth_limit" : 2   
+    },
 
 }
 
 
 class CrawlDataSpider(CrawlSpider):
     name = 'crawl_data'
-    prefecture = 'gifu'
+    prefecture = 'mie'
     pre_rules = prefectures[prefecture]
 
 
@@ -227,13 +269,13 @@ class CrawlDataSpider(CrawlSpider):
     else:
         start_urls = pre_rules['start_urls']
 
-    rules = (
-        # 正規表現にマッチするリンクをクローリング
-        Rule(LinkExtractor(allow=pre_rules['rule1'])),
-        # # # 正規表現にマッチするリンクをparseメソッドでスクレイピング
-        Rule(LinkExtractor(allow=pre_rules['rule2']), follow=True, callback='parse_item'),
-        # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item')
-    )
+    # rules = (
+    #     # 正規表現にマッチするリンクをクローリング
+    #     # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css'])),
+    #     # # # 正規表現にマッチするリンクをparseメソッドでスクレイピング
+    #     Rule(LinkExtractor(restrict_css=pre_rules['restrict_css2']), follow=True, callback='parse_item'),
+    #     # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item')
+    # )
         
 
     def parse_item(self, response):
@@ -249,7 +291,27 @@ class CrawlDataSpider(CrawlSpider):
         
         data_text = " ".join(data_text)
         item['text'] = " ".join(data_text.split())
+        print(item['title'], item['text'])
         return item
+
+
+    def parse_aichi(self, response):
+        item = SearchDataItem()
+        for quote in response.css("#main_body > div.detail_free > div.mol_tableblock > table > tbody > tr"):
+            # for post in quote.css("tbody > tr"):
+                
+            title = quote.css("td:nth-child(1)").xpath('string()').extract()
+            if len(title) == 0:
+                continue
+            item['url'] = response.url
+            title = " ".join(title)
+            item['title'] = " ".join(title.split())
+
+            data_text = quote.xpath('string()').extract()                
+            data_text = " ".join(data_text)
+            item['text'] = " ".join(data_text.split())
+            print(item['url'], item['title'], item['text'])
+            yield item
 
 
     def parse_hukui(self, response):
