@@ -7,6 +7,7 @@ import pickle
 
 
 tochigi_urls_path = "../../../urls/tochigi_urls.pickle"
+hyogo_urls_path = "../../../urls/hyogo_urls.pickle"
 prefectures ={
     "ibaraki": {
         'allowed_domains' : ['www.pref.ibaraki.jp'],
@@ -76,19 +77,29 @@ prefectures ={
     },
     "tochigi": {
         'allowed_domains' : ['tochigiken.jp'],
-        'start_urls' : ['http://tochigiken.jp/?page_id=18'],
-        'title_css' : 'div#mdb_detail_print_20 > table > tr:nth-child(1) > td > table > tr:nth-child(1) > td::text',
-        'text_css' : '#mdb_detail_print_20 > table'
-    },
-    "gunma": {
-        'allowed_domains' : ['www.pref.gunma.jp'],
-        'start_urls' : ['https://www.pref.gunma.jp/07/b2700058.html#tiri1'],
-        'restrict_css' : 'div#scroll-main > article > div',
-        #scroll-main > article > div:nth-child(11) > table
-        'deny_rule' : r"/.+\.(csv|shp|shx|dbf|xls|prj|sbx|xml|sbn)",
-        'title_css' : 'head > title::text',
+        # 'start_urls' : ['http://tochigiken.jp/?page_id=18'],
+        'title_css' : 'body',
+        # 'title_css' : 'div#mdb_detail_print_20 > table > tr:nth-child(1) > td > table > tr:nth-child(1) > td::text',
         'text_css' : 'body'
     },
+    "gunma_1p": {
+        'allowed_domains' : [],
+        'start_urls' : ['https://www.pref.gunma.jp/07/b2700058.html#tiri1'],
+        'restrict_css' : 'div#scroll-main > article > div > table tbody > tr > td:nth-child(4)',
+        #scroll-main > article > div:nth-child(3)
+        #scroll-main > article > div:nth-child(4) > table > tbody > tr:nth-child(1) > td:nth-child(4)
+        # 'deny_rule' : r"/.+\.(csv|shp|shx|dbf|xls|prj|sbx|xml|sbn)",
+        'title_css' : 'head > title::text',
+        'text_css' : 'body',
+        "depth_limit" : 2
+    },
+    "gunma_all_p": {
+        'allowed_domains' : ['www.pref.gunma.jp'],
+        'start_urls' : ['https://www.pref.gunma.jp/07/b2700058.html#tiri1'],
+        'restrict_css' : '#scroll-main > article > div:nth-child(3) > ol:nth-child(2) > li:nth-child(1) > a',
+        "depth_limit" : 0
+    },
+
     "saitama": {
         'allowed_domains' : ['opendata.pref.saitama.lg.jp'],
         'start_urls' : ['https://opendata.pref.saitama.lg.jp/data/dataset?page=4', 'https://opendata.pref.saitama.lg.jp/data/dataset?page=7', 'https://opendata.pref.saitama.lg.jp/data/dataset?page=12',
@@ -103,9 +114,12 @@ prefectures ={
     },
     "chiba": {
         'allowed_domains' : ['www.pref.chiba.lg.jp'],
-        'start_urls' : ['https://www.pref.chiba.lg.jp/kenshidou/opendata/opendata-jinkoudoutai-h30-gaikyou.html'],
-        'restrict_css' : '#tmp_rcnt',
-        # 'rule2' : r'/opendata-.*\.html',
+        'start_urls' : ['https://www.pref.chiba.lg.jp/gyoukaku/opendata/result-opendata.html?keyword=&category=category1&pg=5'],
+        # 'rule' : r'/result.opendata.html.keyword..category.category[0-9].pg.[0-9]+',
+        'rule' : r'/gyoukaku/opendata/result-opendata.html.keyword=&category=category[0-9]&pg=[0-9]+',
+        # 'restrict_css' : '#tmp_opendata_full > div.opendata_search_result_box',
+        # 'restrict_css' : '#tmp_rcnt > div > div > div#tmp_contents',
+        'rule2' : r'/opendata-.*\.html',
         'title_css' : 'head > title::text',
         'text_css' : 'div#tmp_contents',
         "depth_limit" : 2
@@ -242,14 +256,157 @@ prefectures ={
         "depth_limit" : 2   
     },
     "mie": {
-        'allowed_domains' : ['www.pref.aichi.jp'],
-        'start_urls' : ['https://www.pref.mie.lg.jp/IT/HP/87585000001.htm'],
-        # 'rule' : r'/IT/HP/[0-9]+\.htm',
-        # 'restrict_css' : '#center-contents > div.center-body.clearfix',
-        # 'restrict_css2' : '#section1',
+        'allowed_domains' : [],
+        'start_urls' : ['https://www.pref.mie.lg.jp/common/06/ci500003936.htm'],
+        'rule' : r'/IT/HP/[0-9]+\.htm',
+        # 'restrict_css' : '#center-contents',
+        # 'restrict_css2' : '#section1 > div > div > div.table-swipe-wrap > table',
+        'restrict_css2' : '#section1',
         'title_css' : 'head > title::text',
-        'text_css' : 'div#section',
+        'text_css' : '#center-contents > div.section',
         "depth_limit" : 2   
+    },
+    "shiga": {
+        'allowed_domains' : ['www.pref.shiga.lg.jp'],
+        'start_urls' : ['https://www.pref.shiga.lg.jp/ippan/kurashi/ict/300002.html'],
+        'rule' : r'/ippan/kurashi/ict/[0-9]+.html',
+        'restrict_css' : 'body > div.cms-public > div > div > div.area-group-2-3-4 > div.area.area3 > div:nth-child(1) > div > div:nth-child(13)',
+        'title_css' : 'head > title::text',
+        'text_css' : 'body > div.cms-public > div > div > div.area-group-2-3-4 > div.area.area3 > div.parts',
+        "depth_limit" : 2   
+    },
+    "kyoto": {
+        'allowed_domains' : ['data.pref.kyoto.lg.jp'],
+        # 'start_urls' : ['https://data.pref.kyoto.lg.jp/dataset?page=4'],
+
+        'start_urls' : ['https://data.pref.kyoto.lg.jp/dataset?page=4', 'https://data.pref.kyoto.lg.jp/dataset?page=9', 'https://data.pref.kyoto.lg.jp/dataset?page=14',
+                        'https://data.pref.kyoto.lg.jp/dataset?page=19', 'https://data.pref.kyoto.lg.jp/dataset?page=24', 'https://data.pref.kyoto.lg.jp/dataset?page=29',
+                        'https://data.pref.kyoto.lg.jp/dataset?page=34', 'https://data.pref.kyoto.lg.jp/dataset?page=38'],
+        'rule' : r'/dataset.page=[0-9]+',
+        'restrict_css' : '#content > div.row.wrapper > div > section:nth-child(1) > div.module-content > ul > li > div',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "osaka": {
+        'allowed_domains' : ['data.bodik.jp'],
+        'start_urls' : ['https://data.bodik.jp/organization/270008?page=2'],
+        'rule' : r'/organization/270008.page=[1-3]',
+        'restrict_css' : '#content > div.row.wrapper > div > article > div > ul',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "hyogo": {
+        'allowed_domains' : ['open-data.pref.hyogo.lg.jp'],
+        'title_css' : 'head > title::text',
+        'text_css' : '#_centercolumn'
+    },
+    "nara": {
+        'allowed_domains' : ['www.pref.nara.jp'],
+        'start_urls' : ['https://www.pref.nara.jp/44954.htm'],
+        'restrict_css' : r'#ContentPane > div:nth-child(22) > div > div.inside_b > div',
+        'restrict_css2' : '#ContentPane > div:nth-child(5) > div > div.inside_b > div > table > tbody',
+        'title_css' : 'head > title::text',
+        'text_css' : '#ContentPane > div:nth-child(5) > div > div.inside_b > div > table'
+    },
+    "wakayama": {
+        'allowed_domains' : ['data.bodik.jp'],
+        'start_urls' : ['https://data.bodik.jp/organization/300004?page=1'],
+        'rule' : r'/organization/300004.page=[1-3]',
+        'restrict_css' : '#content > div.row.wrapper > div > article > div > ul',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "tottori": {
+        'allowed_domains' : ['odp-pref-tottori.tori-info.co.jp'],
+        'start_urls' : ['https://odp-pref-tottori.tori-info.co.jp/dataset/search/index.p5.html'],
+        'rule' : r'search/index\.p[0-9]+\.html',
+        'rule2' : r'/dataset/[0-9]+\.html',
+        'restrict_css' : '#content > div.row.wrapper > div > article > div > ul',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#main > div.text',
+        'text_css2' : '#main > div.dataset-tabs',
+        "depth_limit" : 2
+    },
+    "shimane": {
+        'allowed_domains' : ['shimane-opendata.jp'],
+        'start_urls' : ['https://shimane-opendata.jp/db/organization/main?page=4'],
+        'rule' : r'/db/organization/main.page=[0-9]+',
+        'restrict_css' : '#content > div.row.wrapper > div > article > div > ul',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div > div',
+        'text_css2' : '#dataset-resources > ul > li',
+        'text_css3' : '#content > div.row.wrapper > div > article > div > section.additional-info',
+        "depth_limit" : 2
+    },
+    "okayama": {
+        'allowed_domains' : ['www.okayama-opendata.jp'],
+        'start_urls' : ['https://www.okayama-opendata.jp/datasets?page=6', 'https://www.okayama-opendata.jp/datasets?page=12',
+                        'https://www.okayama-opendata.jp/datasets?page=19', 'https://www.okayama-opendata.jp/datasets?page=26', 
+                        'https://www.okayama-opendata.jp/datasets?page=33', 'https://www.okayama-opendata.jp/datasets?page=40', 
+                        'https://www.okayama-opendata.jp/datasets?page=47'],
+        'rule' : r'/datasets.page=[0-9]+',
+        'rule2' : r'/datasets/[0-9]+',
+        'title_css' : 'head > title::text',
+        'text_css' : 'body > div > div:nth-child(2) > div > div.l-row > div.l-main > div',
+        "depth_limit" : 2
+    },
+    "hiroshima": {
+        'allowed_domains' : ['www.pref.hiroshima.lg.jp'],
+        'start_urls' : ['https://www.pref.hiroshima.lg.jp/soshiki/265/opendata.html'],
+        'rule' : r'/soshiki/265/opendata-.+\.html',
+        # 'title_css' : 'head > title::text',
+        # 'text_css' : 'body > div > div:nth-child(2) > div > div.l-row > div.l-main > div',
+        "depth_limit" : 1
+    },
+    "yamaguchi": {
+        'allowed_domains' : ['yamaguchi-opendata.jp'],
+        'start_urls' : ['https://yamaguchi-opendata.jp/ckan/dataset?page=4'],
+        'rule' : r'/dataset.page=[0-9]+',
+        'restrict_css' : '#content > div.row.wrapper > div > section:nth-child(1) > div.module-content > ul',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "tokushima": {
+        'allowed_domains' : ['ouropendata.jp'],
+        'start_urls' : ['https://ouropendata.jp/dataset/search/index.p5.html', 'https://ouropendata.jp/dataset/search/index.p14.html', 
+                        'https://ouropendata.jp/dataset/search/index.p23.html', 'https://ouropendata.jp/dataset/search/index.p32.html', 
+                        'https://ouropendata.jp/dataset/search/index.p41.html', 'https://ouropendata.jp/dataset/search/index.p50.html', 
+                        'https://ouropendata.jp/dataset/search/index.p59.html', 'https://ouropendata.jp/dataset/search/index.p68.html', 
+                        'https://ouropendata.jp/dataset/search/index.p76.html'],
+        'rule' : r'/dataset/search/index.p[0-9]+\.html',
+        'rule2' : r'/dataset/[0-9]+\.html',
+        'deny_rule' : r"/dataset/[0-9]+\.html#cms-tab-7-[1-2]-view",
+        'title_css' : 'head > title::text',
+        'text_css' : '#main',
+        "depth_limit" : 2
+    },
+    "kagawa": {
+        'allowed_domains' : ['opendata.pref.kagawa.lg.jp'],
+        'start_urls' : ['https://opendata.pref.kagawa.lg.jp/dataset/search/index.p5.html', 'https://opendata.pref.kagawa.lg.jp/dataset/search/index.p14.html', 
+                        'https://opendata.pref.kagawa.lg.jp/dataset/search/index.p23.html'],
+        'rule' : r'/dataset/search/index.p[0-9]+\.html',
+        'rule2' : r'/dataset/[0-9]+\.html',
+        'deny_rule' : r"/dataset/[0-9]+\.html#cms-tab-7-[1-2]-view",
+        'title_css' : 'head > title::text',
+        'text_css' : '#main > div.text',
+        'text_css3' : '#main > nav',
+        'text_css2' : '#dataset-tabs-7',
+        "depth_limit" : 2
+    },
+    "kochi": {
+        'allowed_domains' : ['www.pref.kochi.lg.jp'],
+        'start_urls' : ['https://www.pref.kochi.lg.jp/opendata/'],
+        'rule' : r'/opendata/docs/.*/',
     },
 
 }
@@ -257,7 +414,7 @@ prefectures ={
 
 class CrawlDataSpider(CrawlSpider):
     name = 'crawl_data'
-    prefecture = 'mie'
+    prefecture = 'kochi'
     pre_rules = prefectures[prefecture]
 
 
@@ -266,33 +423,111 @@ class CrawlDataSpider(CrawlSpider):
     if prefecture == 'tochigi':
         with open(tochigi_urls_path, "rb") as f:
             start_urls = pickle.load(f)
+    elif prefecture == 'hyogo':
+        with open(hyogo_urls_path, "rb") as f:
+            start_urls = pickle.load(f)
+
     else:
         start_urls = pre_rules['start_urls']
 
-    # rules = (
-    #     # 正規表現にマッチするリンクをクローリング
-    #     # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css'])),
-    #     # # # 正規表現にマッチするリンクをparseメソッドでスクレイピング
-    #     Rule(LinkExtractor(restrict_css=pre_rules['restrict_css2']), follow=True, callback='parse_item'),
-    #     # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item')
-    # )
+    rules = (
+        # 正規表現にマッチするリンクをクローリング
+        # Rule(LinkExtractor(allow=pre_rules['rule'])),
+        # # # 正規表現にマッチするリンクをparseメソッドでスクレイピング
+        Rule(LinkExtractor(allow=pre_rules['rule']), follow=True, callback='parse_kochi'),
+        # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item')
+    )
         
 
     def parse_item(self, response):
         item = SearchDataItem()
         item['url'] = response.url
-        item['title'] = response.css(self.pre_rules['title_css']).extract()
+        title = response.css(self.pre_rules['title_css']).extract()
+        item['title'] = [" ".join(title[0].split())]
         data_text = response.css(self.pre_rules['text_css']).xpath('string()').extract()
 
         try:
             data_text.append(response.css(self.pre_rules['text_css2']).xpath('string()').extract()[0])
         except:
             pass
+        try:
+            data_text.append(response.css(self.pre_rules['text_css3']).xpath('string()').extract()[0])
+        except:
+            pass
+        try:
+            data_text.append(response.css(self.pre_rules['text_css4']).xpath('string()').extract()[0])
+        except:
+            pass
+            
         
         data_text = " ".join(data_text)
         item['text'] = " ".join(data_text.split())
-        print(item['title'], item['text'])
+        # print(item['title'], item['text'])
+
         return item
+
+
+
+    def parse_kochi(self, response):
+        item = SearchDataItem()
+        for quote in response.css("#contentBody > article > div.body > table > tbody > tr"):
+            title = quote.css("td:nth-child(1)").xpath('string()').extract()
+            if len(title) == 0:
+                continue
+            item['url'] = response.url
+            title = " ".join(title)
+            item['title'] = " ".join(title.split())
+
+            data_text = quote.xpath('string()').extract()
+            data_text = " ".join(data_text)
+            data_text = " ".join(data_text.split())
+            item['text'] = data_text
+            if "XLS" in " ".join(data_text.split()):
+                item['text'] = " ".join(data_text.split())
+                yield item
+
+
+    def parse_hiroshima(self, response):
+        item = SearchDataItem()
+        for quote in response.css("#main_body > div.detail_free"):
+            for post in quote.css("tbody > tr"):
+                title = post.css("td:nth-child(1)").xpath('string()').extract()
+                if len(title) == 0:
+                    continue
+                item['url'] = response.url
+                title = " ".join(title)
+                item['title'] = " ".join(title.split())
+
+                data_text = post.xpath('string()').extract()
+                data_text = " ".join(data_text)
+                data_text = " ".join(data_text.split())
+                print(type(data_text))
+                item['text'] = data_text
+                yield item
+
+
+    def parse_gunma(self, response):
+        item = SearchDataItem()
+        for quote in response.css("#scroll-main > article > div > table > tbody > tr"):
+            # for post in quote.css("tbody > tr"):
+                
+            title = quote.css("td:nth-child(1)").xpath('string()').extract()
+            if len(title) == 0:
+                continue
+            item['url'] = response.url
+            title = " ".join(title)
+            item['title'] = " ".join(title.split())
+
+            data_text = quote.xpath('string()').extract()                
+            data_text = " ".join(data_text)
+            if "CSV" in " ".join(data_text.split()):
+                item['text'] = " ".join(data_text.split())
+                yield item
+            elif "エクセル" in " ".join(data_text.split()):
+                item['text'] = " ".join(data_text.split())
+                yield item
+
+
 
 
     def parse_aichi(self, response):
@@ -310,7 +545,6 @@ class CrawlDataSpider(CrawlSpider):
             data_text = quote.xpath('string()').extract()                
             data_text = " ".join(data_text)
             item['text'] = " ".join(data_text.split())
-            print(item['url'], item['title'], item['text'])
             yield item
 
 
