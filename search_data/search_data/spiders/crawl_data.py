@@ -153,7 +153,7 @@ prefectures ={
                         'https://www.pref.kanagawa.jp/dst/list-4.html', 'https://www.pref.kanagawa.jp/dst/list-5.html', 'https://www.pref.kanagawa.jp/dst/list-6.html'],
         'restrict_css' : r'#main_body',
         'title_css' : 'head > title::text',
-        'text_css' : '#tmp_contents',
+        'text_css' : '#main_body',
         "depth_limit" : 1
     },
     "niigata": {
@@ -408,13 +408,90 @@ prefectures ={
         'start_urls' : ['https://www.pref.kochi.lg.jp/opendata/'],
         'rule' : r'/opendata/docs/.*/',
     },
+    "hukuoka": {
+        'allowed_domains' : ['ckan.open-governmentdata.org'],
+        'start_urls' : ['https://ckan.open-governmentdata.org/organization/fukuoka-pref?page=4', 'https://ckan.open-governmentdata.org/organization/fukuoka-pref?page=9', 
+                        'https://ckan.open-governmentdata.org/organization/fukuoka-pref?page=14', 'https://ckan.open-governmentdata.org/organization/fukuoka-pref?page=19', 
+                        'https://ckan.open-governmentdata.org/organization/fukuoka-pref?page=24', 'https://ckan.open-governmentdata.org/organization/fukuoka-pref?page=29'],
+        'rule' : r'/organization/fukuoka-pref.page=[0-9]+',
+        'rule2' : r'/dataset/.*',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity|showcases).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "saga": {
+        'allowed_domains' : ['data.bodik.jp'],
+        'start_urls' : ['https://data.bodik.jp/organization/410004?page=4', 'https://data.bodik.jp/organization/410004?page=9', 
+                        'https://data.bodik.jp/organization/410004?page=14', 'https://data.bodik.jp/organization/410004?page=19', 
+                        'https://data.bodik.jp/organization/410004?page=24'],
+        'rule' : r'/organization/410004.page=[0-9]+',
+        'rule2' : r'/dataset/.*',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity|showcases).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "nagasaki": {
+        'allowed_domains' : ['data.bodik.jp'],
+        'start_urls' : ['https://data.bodik.jp/organization/420000?page=4', 'https://data.bodik.jp/organization/420000?page=4'],
+        'rule' : r'/organization/420000.page=[0-9]+',
+        'rule2' : r'/dataset/.*',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity|showcases).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "kumamoto": {
+        'allowed_domains' : ['www.pref.kumamoto.jp'],
+        'start_urls' : ['https://www.pref.kumamoto.jp/soshiki/211/'],
+        'rule' : r'/82808.html',
+        "depth_limit" : 1
+    },
+    "oita": {
+        'allowed_domains' : ['data.bodik.jp'],
+        'start_urls' : ['https://data.bodik.jp/organization/440001?page=4', 'https://data.bodik.jp/organization/440001?page=9'],
+        'rule' : r'/organization/440001.page=[0-9]+',
+        'rule2' : r'/dataset/.*',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity|showcases).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "miyazaki": {
+        'allowed_domains' : ['data.bodik.jp'],
+        'start_urls' : ['https://data.bodik.jp/organization/450006?page=4', 'https://data.bodik.jp/organization/450006?page=9', 
+                        'https://data.bodik.jp/organization/450006?page=14', 'https://data.bodik.jp/organization/450006?page=19', 
+                        'https://data.bodik.jp/organization/450006?page=24'],
+        'rule' : r'/organization/450006.page=[0-9]+',
+        'rule2' : r'/dataset/.*',
+        'deny_rule' : r"/dataset/.*(resource|groups|activity|showcases).*",
+        'title_css' : 'head > title::text',
+        'text_css' : '#content > div.row.wrapper > div > article > div',
+        "depth_limit" : 2
+    },
+    "kagoshima": {
+        'allowed_domains' : ['www.pref.kagoshima.jp'],
+        'start_urls' : ['http://www.pref.kagoshima.jp/ac03/infra/info/opendata/index.html'],
+        'rule' : r'/opendata/.*/index.html',
+        'restrict_css' : '#tmp_contents',
+        'title_css' : 'head > title::text',
+        'text_css' : '#tmp_contents',
+        "depth_limit" : 2
+    },
+    "okinawa": {
+        'allowed_domains' : ['www.pref.okinawa.jp'],
+        'start_urls' : ['https://www.pref.okinawa.jp/site/kikaku/joho/kikaku/opendata/opendate_top.html'],
+        'restrict_css' : '#tmp_contents',
+        "depth_limit" : 1
+    },
 
 }
 
 
 class CrawlDataSpider(CrawlSpider):
     name = 'crawl_data'
-    prefecture = 'kochi'
+    prefecture = 'kanagawa'
     pre_rules = prefectures[prefecture]
 
 
@@ -434,7 +511,7 @@ class CrawlDataSpider(CrawlSpider):
         # 正規表現にマッチするリンクをクローリング
         # Rule(LinkExtractor(allow=pre_rules['rule'])),
         # # # 正規表現にマッチするリンクをparseメソッドでスクレイピング
-        Rule(LinkExtractor(allow=pre_rules['rule']), follow=True, callback='parse_kochi'),
+        Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item'),
         # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item')
     )
         
@@ -465,6 +542,45 @@ class CrawlDataSpider(CrawlSpider):
         # print(item['title'], item['text'])
 
         return item
+
+
+    def parse_okinawa(self, response):
+        item = SearchDataItem()
+        for quote in response.css("#tmp_contents > table > tbody > tr"):
+            title = quote.css("td:nth-child(4)").xpath('string()').extract()
+            if len(title) == 0:
+                continue
+            item['url'] = response.url
+            title = " ".join(title)
+            item['title'] = " ".join(title.split())
+
+            data_text = quote.xpath('string()').extract()
+            data_text = " ".join(data_text)
+            data_text = " ".join(data_text.split())
+            item['text'] = data_text
+            if "xls" in " ".join(data_text.split()) or "csv" in " ".join(data_text.split()):
+                item['text'] = " ".join(data_text.split())
+                yield item
+
+
+
+    def parse_kumamoto(self, response):
+        item = SearchDataItem()
+        for quote in response.css("#main_body > div.detail_free > table > tbody > tr"):
+            title = quote.css("td:nth-child(1)").xpath('string()').extract()
+            if len(title) == 0:
+                continue
+            item['url'] = response.url
+            title = " ".join(title)
+            item['title'] = " ".join(title.split())
+
+            data_text = quote.xpath('string()').extract()
+            data_text = " ".join(data_text)
+            data_text = " ".join(data_text.split())
+            item['text'] = data_text
+            if "CSV" in " ".join(data_text.split()):
+                item['text'] = " ".join(data_text.split())
+                yield item
 
 
 

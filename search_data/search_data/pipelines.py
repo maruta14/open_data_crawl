@@ -12,6 +12,7 @@ import re
 class SearchDataPipeline:
     def process_item(self, item, spider):
 
+
         if "三重県" in item["title"]:
             if not "Excel" or "EXCEL" or "CSV" in item['text']:
                 item["title"] = ""
@@ -24,11 +25,13 @@ class SearchDataPipeline:
         if "島根県" in item["title"]:
             if not "csv" or " XLSX" or "Excel" or "CSV" in item['text']:
                 item["title"] = ""
-        if "おかやま" in item["title"]:
+        if "おかやま" in item["title"][0]:
             if not "XLS" or " XLSX" or "Excel" or "CSV" in item['text']:
                 item["title"] = ""
-        if "CKAN" in item["title"]:
-            if not "XLS" or " XLSX" or "Excel" or "CSV" in item['text']:
+        if "CKAN" in item["title"][0]:
+            if "XLS" in item['text'] or " XLSX" in item['text'] or "Excel" in item['text'] or "CSV" in item['text']:
+                pass
+            else:
                 item["title"] = ""
         if "Our Open Data" in item["title"][0]:
             if "XLS" in item['text'] or "xls" in item['text'] or "CSV" in item['text'] or "csv" in item['text']:
@@ -41,7 +44,10 @@ class SearchDataPipeline:
                 item["text"] = re.sub('//.*]>', '', item["text"])
             else:
                 item["title"] = ""
-        
+        if "鹿児島" in item["title"][0]:            
+            item["text"] = re.sub('ツイート.*;', '', item["text"])
+
+
         if len(item["title"]) == 1 and len(item["text"]) > 1:
             return item
         
