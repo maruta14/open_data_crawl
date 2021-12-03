@@ -2,3 +2,5 @@
 .scrapy
 __pycache__
 *.txt
+search/search/*
+*.pickle

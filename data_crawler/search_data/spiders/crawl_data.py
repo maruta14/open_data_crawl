@@ -362,8 +362,6 @@ prefectures ={
         'allowed_domains' : ['www.pref.hiroshima.lg.jp'],
         'start_urls' : ['https://www.pref.hiroshima.lg.jp/soshiki/265/opendata.html'],
         'rule' : r'/soshiki/265/opendata-.+\.html',
-        # 'title_css' : 'head > title::text',
-        # 'text_css' : 'body > div > div:nth-child(2) > div > div.l-row > div.l-main > div',
         "depth_limit" : 1
     },
     "yamaguchi": {
