@@ -47,6 +47,18 @@ class SearchDataPipeline:
         if "鹿児島" in item["title"][0]:            
             item["text"] = re.sub('ツイート.*;', '', item["text"])
 
+        if "静岡県" in item["title"][0]:
+            if "XLS" in item['text'] or "xls" in item['text'] or "CSV" in item['text'] or "csv" in item['text']:
+                item["text"] = re.sub('//.*]>', '', item["text"])
+            else:
+                item["title"] = ""
+        if "千葉県" in item["title"][0]:
+            if "Excel" in item['text'] or "xls" in item['text'] or "CSV" in item['text'] or "csv" in item['text']:
+                pass
+            else:
+                item["title"] = ""
+
+
 
         if len(item["title"]) == 1 and len(item["text"]) > 1:
             return item

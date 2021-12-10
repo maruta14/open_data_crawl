@@ -6,9 +6,11 @@ from search_data.items import SearchDataItem
 import pickle
 
 
+
 tochigi_urls_path = "../../../urls/tochigi_urls.pickle"
 hyogo_urls_path = "../../../urls/hyogo_urls.pickle"
-prefectures ={
+
+PREFECTURES_PARAMETER = {
     "ibaraki": {
         'allowed_domains' : ['www.pref.ibaraki.jp'],
         'start_urls' : ['https://www.pref.ibaraki.jp/kikaku/joho/it/opendata/od-00.html'],
@@ -116,7 +118,7 @@ prefectures ={
         'allowed_domains' : ['www.pref.chiba.lg.jp'],
         'start_urls' : ['https://www.pref.chiba.lg.jp/gyoukaku/opendata/result-opendata.html?keyword=&category=category1&pg=5'],
         # 'rule' : r'/result.opendata.html.keyword..category.category[0-9].pg.[0-9]+',
-        'rule' : r'/gyoukaku/opendata/result-opendata.html.keyword=&category=category[0-9]&pg=[0-9]+',
+        'rule' : r'/gyoukaku/opendata/result-opendata.html.keyword=.category=category[0-9]&pg=[0-9]+',
         # 'restrict_css' : '#tmp_opendata_full > div.opendata_search_result_box',
         # 'restrict_css' : '#tmp_rcnt > div > div > div#tmp_contents',
         'rule2' : r'/opendata-.*\.html',
@@ -218,9 +220,9 @@ prefectures ={
         'allowed_domains' : ['tokei.pref.nagano.lg.jp'],
         'start_urls' : ['https://tokei.pref.nagano.lg.jp/statistics-info/search-field'],
         'rule1' : r'/statistics_field/statistics_field[0-9]+',
-        'rule2' : r'/[0-9]+\.html',
-        'rule3' : r'/statistics/[0-9]+\.html',
-        'restrict_css' : '#search-item-list-box',
+        'rule2' : r'/statist_list/[0-9]+\.html',
+        # 'rule3' : r'/statistics/[0-9]+\.html',
+        # 'restrict_css' : '#search-item-list-box',
         'title_css' : 'head > title::text',
         'text_css' : '#main > div.page-contents.border-top02 > section',
         "depth_limit" : 3
@@ -236,12 +238,20 @@ prefectures ={
         'text_css' : '#content > div.row.wrapper > div > article > div',
         "depth_limit" : 2   
     },
-    "sizuoka": {
+    "shizuoka": {
         'allowed_domains' : ['opendata.pref.shizuoka.jp'],
-        'start_urls' : ['https://opendata.pref.shizuoka.jp/dataset/search?page=5',],
+        'start_urls' : ['https://opendata.pref.shizuoka.jp/dataset/search?page=5', 'https://opendata.pref.shizuoka.jp/dataset/search?page=14',
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=23', 'https://opendata.pref.shizuoka.jp/dataset/search?page=32', 
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=41', 'https://opendata.pref.shizuoka.jp/dataset/search?page=50', 
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=59', 'https://opendata.pref.shizuoka.jp/dataset/search?page=68', 
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=77', 'https://opendata.pref.shizuoka.jp/dataset/search?page=86', 
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=95', 'https://opendata.pref.shizuoka.jp/dataset/search?page=104', 
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=113', 'https://opendata.pref.shizuoka.jp/dataset/search?page=122',
+                        'https://opendata.pref.shizuoka.jp/dataset/search?page=131',     
+                        ],
         'rule1' : r'/dataset/search.page=[0-9]+',
         'rule2' : r'/dataset/.*\.html',
-        # 'deny_rule' : r"/dataset/.*(resource|groups|activity).*",    
+        'deny_rule' : r"/dataset/.*(resource|groups|activity).*",    
         'title_css' : 'head > title::text',
         'text_css' : '#main > div.contents',
         'text_css2' : '#cms-tab-7-0-view > div > div > dl',
@@ -489,8 +499,8 @@ prefectures ={
 
 class CrawlDataSpider(CrawlSpider):
     name = 'crawl_data'
-    prefecture = 'kanagawa'
-    pre_rules = prefectures[prefecture]
+    prefecture = 'chiba'
+    pre_rules = PREFECTURES_PARAMETER[prefecture]
 
 
     allowed_domains = pre_rules['allowed_domains']
@@ -505,21 +515,24 @@ class CrawlDataSpider(CrawlSpider):
     else:
         start_urls = pre_rules['start_urls']
 
+
     rules = (
         # 正規表現にマッチするリンクをクローリング
-        # Rule(LinkExtractor(allow=pre_rules['rule'])),
+        Rule(LinkExtractor(allow=pre_rules['rule'])),
+        Rule(LinkExtractor(allow=pre_rules['rule2']), follow=True, callback='parse_item'),
+        # Rule(LinkExtractor(allow=pre_rules['rule3'])),
         # # # 正規表現にマッチするリンクをparseメソッドでスクレイピング
-        Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item'),
+        # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item'),
         # Rule(LinkExtractor(restrict_css=pre_rules['restrict_css']), follow=True, callback='parse_item')
     )
-        
+    
 
     def parse_item(self, response):
         item = SearchDataItem()
         item['url'] = response.url
-        title = response.css(self.pre_rules['title_css']).extract()
-        item['title'] = [" ".join(title[0].split())]
-        data_text = response.css(self.pre_rules['text_css']).xpath('string()').extract()
+        # title = response.css(self.pre_rules['title_css']).extract()
+        # item['title'] = [" ".join(title[0].split())]
+        # data_text = response.css(self.pre_rules['text_css']).xpath('string()').extract()
 
         try:
             data_text.append(response.css(self.pre_rules['text_css2']).xpath('string()').extract()[0])
@@ -535,8 +548,8 @@ class CrawlDataSpider(CrawlSpider):
             pass
             
         
-        data_text = " ".join(data_text)
-        item['text'] = " ".join(data_text.split())
+        # data_text = " ".join(data_text)
+        # item['text'] = " ".join(data_text.split())
         # print(item['title'], item['text'])
 
         return item
@@ -717,9 +730,6 @@ class CrawlDataSpider(CrawlSpider):
                 data_text = " ".join(data_text)
                 item['text'] = " ".join(data_text.split())
                 yield item
-
-
-
 
 
     def parse_yamagata(self, response):

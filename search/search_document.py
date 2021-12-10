@@ -13,7 +13,7 @@ def main():
     ])
     
     s = Search(using=es, index="website") \
-    .query("match", title="人口")   \
+    .query("match", text="人口")   \
 
     response = s.execute()
 
